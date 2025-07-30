@@ -28,7 +28,11 @@ module tt_um_weighted_majority (
 
     reg [N-1:0] window;
     reg [WIDTH-1:0] weights [0:N-1];
-    localparam [WIDTH-1:0] default_weights [0:N-1] = '{8, 4, 2, 1};
+    localparam [WIDTH-1:0] W0 = 8;
+    localparam [WIDTH-1:0] W1 = 4;
+    localparam [WIDTH-1:0] W2 = 2;
+    localparam [WIDTH-1:0] W3 = 1;
+    //localparam [WIDTH-1:0] default_weights [0:N-1] = '{8, 4, 2, 1};
 
     reg [WIDTH+N-1:0] sum;
     reg trend;
