@@ -1,9 +1,8 @@
-// SPDX-License-Identifier: Apache-2.0
 `default_nettype none
 
 module tt_um_weighted_majority (
-    input  wire [7:0]  ui_in,    // Inputs: [0] = bit stream in
-    output wire [7:0]  uo_out,   // Outputs: [0] = trend output
+    input  wire [7:0]  ui_in,
+    output wire [7:0]  uo_out,
     input  wire [7:0]  uio_in,
     output wire [7:0]  uio_out,
     output wire [7:0]  uio_oe,
@@ -12,52 +11,45 @@ module tt_um_weighted_majority (
     input  wire        rst_n
 );
 
-    // Tie off unused IOs
     assign uio_out = 8'd0;
     assign uio_oe  = 8'd0;
 
+    // Single bit input (use ui_in[0]) and single bit output (uo_out[0])
     wire in_bit = ui_in[0];
-    wire trend_out;
+    reg [7:0] out_reg;
+    assign uo_out = out_reg;
 
-    assign uo_out[0] = trend_out;
-    assign uo_out[7:1] = 7'b0;
+    // Window and weights
+    reg [3:0] window;
+    localparam integer W0 = 8; // Most recent
+    localparam integer W1 = 4;
+    localparam integer W2 = 2;
+    localparam integer W3 = 1; // Oldest
 
-    // ---- Configurable Parameters ----
-    parameter N = 4;
-    parameter WIDTH = 4;
-
-    reg [N-1:0] window;
-    reg [WIDTH-1:0] weights [0:N-1];
-    localparam [WIDTH-1:0] W0 = 8;
-    localparam [WIDTH-1:0] W1 = 4;
-    localparam [WIDTH-1:0] W2 = 2;
-    localparam [WIDTH-1:0] W3 = 1;
-    //localparam [WIDTH-1:0] default_weights [0:N-1] = '{8, 4, 2, 1};
-
-    reg [WIDTH+N-1:0] sum;
+    integer sum;
     reg trend;
     wire reset = ~rst_n;
-
-    assign trend_out = trend;
-
-    integer i;
 
     always @(posedge clk or posedge reset) begin
         if (reset) begin
             window <= 0;
             trend <= 0;
-            for (i = 0; i < N; i = i + 1)
-                weights[i] <= default_weights[i];
+            out_reg <= 0;
         end else begin
-            window <= {window[N-2:0], in_bit};
-            sum = 0;
-            for (i = 0; i < N; i = i + 1)
-                sum = sum + window[i] * weights[i];
+            // Shift window, add newest bit at LSB (window[0])
+            window <= {window[2:0], in_bit};
+
+            // Compute weighted sum (recent bits have more weight)
+            sum = window[3]*W0 + window[2]*W1 + window[1]*W2 + window[0]*W3;
+
+            // Hysteresis thresholds
             if (sum >= 8)
                 trend <= 1;
             else if (sum < 4)
                 trend <= 0;
-            // else, hold previous trend (hysteresis)
+            // else, keep previous value
+
+            out_reg <= {7'd0, trend}; // Only uo_out[0] is used
         end
     end
 
