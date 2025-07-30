@@ -8,16 +8,16 @@ module tb ();
     wire [7:0] uo_out;
     wire [7:0] uio_in, uio_out, uio_oe;
 
-`ifdef GL_TEST
-    supply1 VPWR;
-    supply0 VGND;
-`endif
+//`ifdef GL_TEST
+//    supply1 VPWR;
+//    supply0 VGND;
+//`endif
 
     tt_um_weighted_majority dut (
-`ifdef GL_TEST
-        .VPWR(VPWR),
-        .VGND(VGND),
-`endif
+//`ifdef GL_TEST
+//        .VPWR(VPWR),
+//        .VGND(VGND),
+//`endif
         .clk(clk),
         .rst_n(rst_n),
         .ena(ena),
