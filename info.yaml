@@ -1,6 +1,6 @@
 project:
   title:        "Weighted Majority Voter / Trend Detector"
-  author:       "Aditya Varma, Nischay B S, Santhosh V, Syed Abdur Rahman, Meghana P Manru"
+  author:       "Aditya Varma, Nischay B S, Santhosh V, Syed Abdur Rahman, Meghana P Manru, Shylashree N, RV College of Engineering"
   discord:      ""
   description:  "Detects input trend using a weighted voting algorithm with hysteresis."
   language:     "Verilog"
